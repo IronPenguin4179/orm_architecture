@@ -1,0 +1,28 @@
+1.) A RubyGem is package following set standards. Gems have the advantage of being easy to install and
+    use with the Ruby package manager. A RubyGem includes a GemSpec with the Gem's requirements for the 
+    system, other gems, and specific versions. If a gem is missing in the GemSpec Ruby will install all 
+    required gems along with it and update any out of date ones so the Gem is usable. This allows gems 
+    to use the functionality of many other gems without needing the user to have to track down and
+    make sure each dependency meets the requirements.
+
+2.) Eager loading is to write your code so there are a few queries which are executed once and attributed 
+    to an object. Then accessing specific values only requires referencing part of the object and not 
+    performing the queries again. This means less queries, but you use up more memory. In lazy loading 
+    you do a query everytime you look up data. Less memory because the info isn't all stored, but it must
+    query constantly.
+
+3.)CREATE TABLE creates a new sql table. INSERT INTO inserts new info into an existing table.
+
+4.) Extend makes the method part of the class itself and not an instance method. Include adds the method 
+    as an instance method.
+
+5.) #save! needs to be an instance method because it needs to be saving the data for a particular table to
+    a particular instance. This way you can specify which instance you want to be saved.
+
+6.) UPDATE star_wars_characters
+    SET star_rating = 0
+    WHERE character_name = "Jar-Jar Binks";
+
+7.) We'll make a selection method that queries all data in the table into an array. Then we can make a method in 
+    address_book that will call the selection method and return an array of all the entries in the table.
+-------------------
