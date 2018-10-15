@@ -1,0 +1,89 @@
+1.)
+SELECT DISTINCT title
+FROM post;
+
+posts = Post.all
+posts.uniq! {|x| x[:title]}
+
+2.)
+SELECT title
+FROM post
+WHERE rating > 9000;
+
+posts = Post.all
+high_rating_posts = []
+posts.map {|x| if x[:rating] > 9000 high_rating_posts.push(x)}
+
+3.)
+SELECT title
+FROM post
+ORDER BY rating ASC;
+
+posts = Post.all
+posts.sort!
+
+4.)
+SELECT title
+FROM post
+ORDER BY rating ASC
+LIMIT 5;
+
+posts = Post.all
+posts.sort!
+posts[1..5]
+
+5.)
+SELECT body
+FROM comment
+GROUP BY post_id;
+
+comments = Comment.all
+ordered_comments = []
+comments.map { |comment|
+  if ordered_comments.include?(comment[:post_id])
+    ordered_comments.assoc(comment[:post_id]).last.push(comment[:body])
+  else
+    ordered_comments.push([comment[:post_id],[ comment[:body] ]])
+  end  
+}
+
+6.)
+SELECT user, COUNT(post) AS total_posts
+FROM post
+GROUP BY user; 
+
+posts = Post.all
+user_post_counts = []
+#Checks to see if user is in user_post_counts yet then it
+#finds user in the array and increments its associated value by 1.
+#If user isn't in the array yet, add it to the array and give it a
+#post count of 1.
+posts.map { |post|
+  if user_post_counts.include?(post[:user])
+    user_post_counts.assoc(post[:user]).last += 1
+  else
+    user_post_counts.push([post[:user],1])
+  end
+}
+
+7.)
+SELECT p.title, c.body
+FROM post AS p
+RIGHT JOIN comment AS c
+ON p.title = c.post;
+
+posts = Post.all
+comments = Comment.all
+
+post_array = []
+
+posts.map { |post|
+  post_array.push([post[:title],[]])
+}
+
+#Finds the post array associated to the comment and adds the comment body
+#to the posts second array. This will make each post attached to an array
+#of comments.
+comments.map { |comment|
+  post_array.assoc(comment[:post])[1].push(comment[:body])
+}
