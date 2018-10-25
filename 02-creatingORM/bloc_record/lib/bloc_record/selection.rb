@@ -168,17 +168,67 @@ module Selection
   end
 
   def order(*args)
-    if args.count > 1
-      order = args.join(",")
-    else
-      order = args.first.to_s
+    strings = ""
+    order_found = false
+    array_strings = []
+    array_of_rows = []
+
+    #Iterates through all args, identifies different entries, converts them to strings
+    #and then adds each string to array_strings
+    args.map { |arg|
+      if arg.is_a?(String)
+        while arg.include?(",")
+          arg.strip!
+          comma_index = arg.index(",")
+          arg_slice = arg.slice!(0,comma_index+1).delete_suffix(",")
+          array_strings.push(arg_slice)
+        end
+        array_strings.push(arg.strip)
+      elsif arg.is_a?(Hash)
+        arg.to_a.map { |pair|
+          array_strings.push(pair.first.to_s + " " + pair.last.to_s)
+        }
+      elsif arg.is_a?(Symbol)
+        array_strings.push(arg.to_s)
+      end
+    }
+    
+    #Iterates through each arg in array_strings and looks for a described order. If an 
+    #item doesn't contain an order it is added to strings, and each iteration will add
+    #to string until an order is found. Once order is found rows from SQL query are pushed
+    #to array_of_rows.
+    array_strings.map{ |item|
+      if item.include?("DESC") || item.include?("desc")
+        order = "DESC"
+
+        column_names = strings + item[0..-6]
+        rows = order_sql_connect(column_names,order)
+        array_of_rows.push(rows)
+
+        strings = ""
+        order_found = true
+      elsif item.include?("ASC") || item.include?("asc")
+        order = "ASC"
+
+        column_names = strings + item[0..-6]
+        rows = order_sql_connect(column_names,order)
+        array_of_rows.push(rows)
+
+        strings = ""
+        order_found = true
+      else
+        strings = strings + item + ","
+      end
+    }
+  
+    #If no order is given, gets rows from SQL with default order of ASC.
+    if order_found == false
+      column_names = strings.delete_suffix(",")
+      rows = order_sql_connect(column_names,"ASC")
+      array_of_rows.push(rows)
     end
 
-    rows = connection.execute <<-SQL
-      SELECT * FROM #{table}
-      ORDER BY #{order};
-    SQL
-    rows_to_array(rows)
+    return array_of_rows
   end
 
   def join(*args)
@@ -227,5 +277,15 @@ module Selection
 
   def input_error
     raise "An input error has occured."
+  end
+
+  #For use is order, takes a string of column names and a string of order,
+  #inserts them into SQL, and returns an array containing rows.
+  def order_sql_connect(column_names, order)
+    rows = connection.execute <<-SQL
+      SELECT #{column_names} FROM #{table}
+      ORDER BY #{order};
+    SQL
+    rows_to_array(rows)
   end
 end
