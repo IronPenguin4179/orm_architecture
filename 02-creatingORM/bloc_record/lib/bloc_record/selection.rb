@@ -280,6 +280,9 @@ module Selection
 
   def rows_to_array(rows)
     rows.map { |row| new(Hash[columns.zip(row)]) }
+    collection = BlocRecord::collection.new
+    rows.each { |row| collection << new(Hash[columns.zip(row)]) }
+    collection
   end
 
   def input_error
