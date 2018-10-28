@@ -248,6 +248,13 @@ module Selection
           SELECT * FROM #{table}
           INNER JOIN #{args.first} ON #{args.first}.#{table}_id = #{table}.id
         SQL
+      when Hash
+        assoc = args.shift
+        rows = connection.execute <<-SQL
+          SELECT * FROM #{table}
+          INNER JOIN #{assoc.first} ON #{assoc.first}.#{table}_id = #{table}.id
+          INNER JOIN #{assoc.last} ON #{assoc.last}.#{assoc.first}_id = #{assoc.first}.id
+        SQL
       end
     end
 

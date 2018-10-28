@@ -1,0 +1,7 @@
+3.) SELECT d.department, AVG(c.vacation_days)
+FROM department AS d
+JOIN professor AS p
+ON d.id = p.department_id
+JOIN compensation AS c
+ON p.id = c.professor_id
+GROUP BY d.department;
