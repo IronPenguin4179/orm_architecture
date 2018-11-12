@@ -265,6 +265,9 @@ module Selection
     if m.include?('find_by_')
       suffix = m.to_s.delete_prefix('find_by_')
       self.send("find_by",suffix.to_sym,*args)
+    elsif m.include?('update_')
+      suffix = m.to_s.delete_prefix('update_')
+      self.send("update_attribute",suffix.to_sym,*args)
     else
       raise "Method missing error."
     end
@@ -279,7 +282,6 @@ module Selection
   end
 
   def rows_to_array(rows)
-    rows.map { |row| new(Hash[columns.zip(row)]) }
     collection = BlocRecord::collection.new
     rows.each { |row| collection << new(Hash[columns.zip(row)]) }
     collection

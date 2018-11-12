@@ -1,50 +1,34 @@
-def order(*args)
-  array_strings = []
-  order_found = false
-  args.map { |arg|
-    if arg.is_a?(String)
-      while arg.include?(",")
-        arg.strip!
-        comma_index = arg.index(",")
-        arg_slice = arg.slice!(0,comma_index+1).delete_suffix(",")
-        array_strings.push(arg_slice)
-      end
-      array_strings.push(arg.strip)
-    elsif arg.is_a?(Hash)
-      arg.to_a.map { |pair|
-        array_strings.push(pair.first.to_s + " " + pair.last.to_s)
-      }
-    elsif arg.is_a?(Symbol)
-      array_strings.push(arg.to_s)
-    end
+def update(ids, updates)
+  if updates.values.first.is_a? (Hash)
+    updates_hash = {}
+    updates.map {|hash|
+      updates_hash.merge(hash)
+    }
+  end
+  updates_array = BlocRecord::Utility.convert_keys(updates_hash)
+  updates_array.delete "id"
+  array_of_updates = updates.map {|key, value|
+    "#{key}=#{BlocRecord::Utility.sql_strings(value)}"
   }
   
-  strings = ""
-  array_strings.map{ |item|
-    if item.include?("DESC") || item.include?("desc")
-      order = "DESC"
-      puts "SELECT #{strings + item[0..-6]} FROM TABLE ORDER BY #{order};"
-      strings = ""
-      order_found = true
-    elsif item.include?("ASC") || item.include?("asc")
-      order = "ASC"
-      puts "SELECT #{strings + item[0..-5]} FROM TABLE ORDER BY #{order};"
-      strings = ""
-      order_found = true
-    else
-      strings = strings + item + ","
-    end
-  }
-
-  if order_found == false
-    puts "SELECT #{strings.delete_suffix(",")} FROM TABLE ORDER BY ASC;"
+  if ids.class == Fixnum
+    where_clause = "WHERE id = #{ids};"
+  elsif ids.class == Array
+    where_clause = ids.empty? ? ";" : "WHERE id IN (#{ids.join(",")});"
+  else
+    where_clause = ";"
   end
-  puts "----------"
 
+  connection.execute <<-SQL
+    UPDATE #{table}
+    SET #{array_of_updates * ","} #{where_clause}
+  SQL
+
+  true
+
+  puts updates_array
 end
 
-order(:name, phone_number: :desc)
-order(name: :asc, phone_number: :desc)
-order("name, boot, phone_number DESC, title asc")
-order("name ASC","phone_number DESC")
-order("name,phone_number,title")
+#people = { 1 => { "first_name" => "David" }, 2 => { "first_name" => "Jeremy" } }
+#Person.update(people.keys, people.values)
+
