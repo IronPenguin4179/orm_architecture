@@ -111,7 +111,7 @@ module Persistence
         "#{key}=#{BlocRecord::Utility.sql_strings(value)}"
       }
       
-      if ids.class == Fixnum
+      if ids.class == Integer
         where_clause = "WHERE id = #{ids};"
       elsif ids.class == Array
         where_clause = ids.empty? ? ";" : "WHERE id IN (#{ids.join(",")});"

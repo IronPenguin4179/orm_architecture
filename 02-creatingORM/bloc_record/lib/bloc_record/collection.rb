@@ -22,7 +22,6 @@ module BlocRecord
         case args.first
         when String
           expression = args.first
-        end
         when Hash
           expression_hash = BlocRecord::Utility.convert_keys(args.first)
           expression = expression_hash.map {|key, value| "#{key}!=#{BlocRecord::Utility.sql_strings(value)}"}.join(" and ")

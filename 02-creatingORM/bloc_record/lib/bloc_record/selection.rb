@@ -44,7 +44,7 @@ module Selection
   end
 
   def find_each(start=0,batch=start)
-    if start.is_a?(Integer) = false || batch.is_a?(Integer) = false
+    if start.is_a?(Integer) == false || batch.is_a?(Integer) == false
       input_error()
     end
     
@@ -68,7 +68,7 @@ module Selection
   end
 
   def find_in_batches(start=0, batch=start)
-    if start.is_a?(Integer) = false || batch.is_a?(Integer) = false
+    if start.is_a?(Integer) == false || batch.is_a?(Integer) == false
       input_error()
     end
     
@@ -151,7 +151,6 @@ module Selection
       case args.first
       when String
         expression = args.first
-      end
       when Hash
         expression_hash = BlocRecord::Utility.convert_keys(args.first)
         expression = expression_hash.map {|key, value| "#{key}=#{BlocRecord::Utility.sql_strings(value)}"}.join(" and ")
@@ -282,7 +281,7 @@ module Selection
   end
 
   def rows_to_array(rows)
-    collection = BlocRecord::collection.new
+    collection = BlocRecord::Collection.new
     rows.each { |row| collection << new(Hash[columns.zip(row)]) }
     collection
   end
