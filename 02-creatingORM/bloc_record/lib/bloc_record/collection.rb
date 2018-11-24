@@ -37,6 +37,11 @@ module BlocRecord
       rows = connection.execute(sql, params)
       rows_to_array(rows)
     end
+
+    def destroy_all
+      ids = self.map(&:id)
+      self.any? ? self.first.class.destroy(ids) : false
+    end
   end
 end
 

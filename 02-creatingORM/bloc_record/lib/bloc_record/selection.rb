@@ -291,7 +291,7 @@ module Selection
     raise "An input error has occured."
   end
 
-  #For use is order, takes a string of column names and a string of order,
+  #For use in order, takes a string of column names and a string of order,
   #inserts them into SQL, and returns an array containing rows.
   def order_sql_connect(column_names, order)
     rows = connection.execute <<-SQL
