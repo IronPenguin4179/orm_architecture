@@ -1,6 +1,7 @@
 #Database schema info that will translate between SQL table and Ruby class.
 
 require 'sqlite3'
+require 'pg'
 require 'bloc_record/utility'
 
 module Schema
